@@ -1,4 +1,4 @@
-An easy and fast random number library in C++.
+An easy and fast non-cryptographic random number library in C++.
 
 The default constructor seeds the PRNG using `chrono::high_resolution_clock`.
 
@@ -26,7 +26,7 @@ Generate a random integer:
 uint64_t x = random.get_u64();
 ```
 
-Generate a random integer less than 100:
+Generate a random integer `x < 100`:
 
 ```c++
 uint64_t x = random.get_range(100);
@@ -69,7 +69,7 @@ random.shuffle(a, 100);
 ```
 
 The library uses the `xoroshiro256++` algorithm, which has nice properties for
-most non-cryptographic applications. It passes all statistical tests and has a
+most non-cryptographic applications. It passes standard statistical tests and has a
 period of `2^256 - 1`. For more information, see
 [this page](https://prng.di.unimi.it/).
 
