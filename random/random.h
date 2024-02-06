@@ -32,7 +32,14 @@ SOFTWARE.
 #include <chrono>
 #include <algorithm>
 
-#if defined(_M_X64)
+// lzcnt is technically part of the ABM extensions, which precede BMI1, which
+// is distinct from AVX. However, due to different preprocessor directives on
+// different compilers, we need to check for all three.
+#if defined(__ABM__) || defined(__BMI__) || defined(__AVX__)
+#define RANDOM_HAS_LZCNT
+#endif
+
+#if defined(RANDOM_HAS_LZCNT)
 #include <immintrin.h>
 #elif defined(_MSC_VER)
 #include <intrin.h>
@@ -77,7 +84,7 @@ public:
     // Unbiased random numbers in a range.
     // Adapted from https://www.pcg-random.org/posts/bounded-rands.html
     uint64_t get_range(uint64_t range) {
-#if defined(_M_X64) || defined(__clang__) || defined(__GNUC__) || defined(_MSC_VER)
+#if defined(RANDOM_HAS_LZCNT) || defined(__clang__) || defined(__GNUC__) || defined(_MSC_VER)
         // Do the bitmask rejection method if the lzcnt/bsr intrinsic is
         // available.
 
@@ -86,7 +93,7 @@ public:
 
         unsigned long index;
 
-#if defined(_M_X64)
+#if defined(RANDOM_HAS_LZCNT)
         index = _lzcnt_u64(range | 1);
 #elif defined(__clang__) || defined(__GNUC__)
         index = __builtin_clzll(range | 1);
