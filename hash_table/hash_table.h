@@ -31,7 +31,6 @@ SOFTWARE.
 #include <cstdint>
 #include <cstdlib>
 #include <cstring>
-#include <utility>
 #include <type_traits>
 
 template<typename K, typename V>
