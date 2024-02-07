@@ -105,6 +105,9 @@ public:
                 back_buffer.state = buffer_idle;
                 std::swap(buffer, back_buffer);
             } else {
+                // By leaving the back buffer in the result_ready state, we
+                // ensure that further calls to swap() will return immediately
+                // with bytes_read == 0, indicating EOF.
                 back_buffer.bytes_read = 0;
             }
 
