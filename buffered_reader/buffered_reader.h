@@ -89,30 +89,26 @@ public:
     uint8_t *swap(size_t &bytes_read) {
         std::unique_lock lock(mutex);
 
-        if (state != state_running)
-            return nullptr;
-
-        uint8_t *result = nullptr;
-
         while (state == state_running && back_buffer.state != buffer_result_ready)
             main_thread_cv.wait(lock);
 
-        if (state == state_running) {
-            result = back_buffer.memory;
-            bytes_read = back_buffer.bytes_read;
+        if (state != state_running)
+            return nullptr;
 
-            if (!back_buffer.eof) {
-                back_buffer.state = buffer_idle;
-                std::swap(buffer, back_buffer);
-            } else {
-                // By leaving the back buffer in the result_ready state, we
-                // ensure that further calls to swap() will return immediately
-                // with bytes_read == 0, indicating EOF.
-                back_buffer.bytes_read = 0;
-            }
+        uint8_t *result = back_buffer.memory;
+        bytes_read = back_buffer.bytes_read;
 
-            read_thread_cv.notify_one();
+        if (!back_buffer.eof) {
+            back_buffer.state = buffer_idle;
+            std::swap(buffer, back_buffer);
+        } else {
+            // By leaving the back buffer in the result_ready state, we
+            // ensure that further calls to swap() will return immediately
+            // with bytes_read == 0, indicating EOF.
+            back_buffer.bytes_read = 0;
         }
+
+        read_thread_cv.notify_one();
 
         return result;
     }
