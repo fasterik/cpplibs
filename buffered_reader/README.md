@@ -21,22 +21,19 @@ In this case, it would use 1024 MB total (512 MB per buffer). The default size
 is 256 MB (128 MB per buffer).
 
 As soon as `open` is called, it kicks off the first read on a background
-thread. The next buffer can be accessed with the `swap` method:
+thread. The next available buffer can be accessed with the `swap` method:
 
 ```c++
 size_t bytes_read;
 uint8_t *buffer = reader.swap(bytes_read);
 ```
 
-The thread will block if data isn't yet available. As soon as `swap` returns,
-it kicks off the next read if the previous read succeeded and there is still
-data left.
+The calling thread will block if the background read is still in progress.
+Before `swap` returns, it kicks off the next background read.
 
-In this way, the program can process the current buffer while the back buffer
-is filled with the next chunk of the file in the background.
-
-If `swap` returns `nullptr`, this indicates an error. If `swap` succeeds and
-`bytes_read` is 0, this indicates that the end of the file has been reached.
+If `swap` returns `nullptr`, this indicates that the read failed. If `swap`
+succeeds and `bytes_read` is 0, this indicates that the end of the file has
+been reached.
 
 When done with the reader, you can call `close`:
 

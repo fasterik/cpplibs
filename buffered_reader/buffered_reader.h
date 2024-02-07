@@ -86,7 +86,7 @@ public:
         state = state_uninitialized;
     }
 
-    const uint8_t *swap(size_t &bytes_read) {
+    uint8_t *swap(size_t &bytes_read) {
         std::unique_lock lock(mutex);
 
         if (state != state_running)
