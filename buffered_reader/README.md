@@ -7,8 +7,9 @@ processing of the file requires seeking.
 
 ```c++
 BufferedReader reader;
-if (!reader.open("file.txt"))
-    printf("Open failed\n");
+if (!reader.open("file.txt")) {
+    // Open failed
+}
 ```
 
 The `open` method takes an optional parameter, `size_mb`:
@@ -26,6 +27,11 @@ thread. The next available buffer can be accessed with the `swap` method:
 ```c++
 size_t bytes_read;
 uint8_t *buffer = reader.swap(bytes_read);
+if (!buffer) {
+    // Read failed
+} else if (bytes_read == 0) {
+    // End of file reached
+}
 ```
 
 The calling thread will block if the background read is still in progress.
