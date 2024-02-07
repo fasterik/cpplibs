@@ -163,7 +163,6 @@ private:
             }
 
             main_thread_cv.notify_one();
-            lock.unlock();
         }
 
         stream.close();
